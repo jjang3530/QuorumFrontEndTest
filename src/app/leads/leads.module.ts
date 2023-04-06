@@ -7,6 +7,7 @@ import { LeadsListComponent } from './leads-list.component';
 import { LeadsEffects } from './leads.effects';
 import { leadsReducer } from './leads.reducer';
 import { LeadsService } from './leads.service';
+import { MatTableModule } from '@angular/material/table';
 
 @NgModule({
   declarations: [
@@ -15,6 +16,7 @@ import { LeadsService } from './leads.service';
   imports: [
     CommonModule,
     HttpClientModule,
+    MatTableModule,
     StoreModule.forFeature('leads', leadsReducer),
     EffectsModule.forFeature([LeadsEffects])
   ],
