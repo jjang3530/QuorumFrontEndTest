@@ -8,5 +8,14 @@ export const leadsReducer = createReducer(
   initial_state,
   on(LeadsActions.receive, (leads, action) => {
     return action.leads;
+  }),
+  on(LeadsActions.updateLead, (state, action) => {
+    const updatedLeads = state.map((lead) => {
+      if (lead.lead_id === action.lead.lead_id) {
+        return { ...lead, ...action.lead };
+      }
+      return lead;
+    });
+    return updatedLeads;
   })
 );

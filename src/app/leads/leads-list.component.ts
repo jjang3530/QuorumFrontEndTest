@@ -1,10 +1,11 @@
 import { Component } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { Observable } from 'rxjs';
+import { EMPTY, Observable, of } from 'rxjs';
 import { LeadsActions } from './leads.actions';
 import { Lead } from './leads.model';
 import { LeadsSelectors } from './leads.selectors';
 import { LeadsService } from './leads.service';
+import { filter, map, switchMap, take } from 'rxjs/operators';
 
 @Component({
   selector: 'av-leads-list',
@@ -32,22 +33,62 @@ export class LeadsListComponent {
   }
 
   fetchAndStorePotentialDuplicates(lead_id: string) {
-    this.leadsService.fetchPotentialDuplicates(lead_id).subscribe(pdData => {
-      const index = this.potentialDuplicates.findIndex(item => item.id === lead_id);
+    const index = this.potentialDuplicates.findIndex(item => item.id === lead_id);
+    if (index !== -1) {
+      // If there is existing data, update the potentialDuplicates array using that data.
+      const pdData = this.potentialDuplicates[index].data;
       if (pdData) {
-        if (index === -1) {
-          this.potentialDuplicates.push({ id: lead_id, data: pdData });
-        } else {
-          this.potentialDuplicates[index].data = pdData;
-        }
-      } else if (index !== -1) {
+        // ...
+      } else {
         this.potentialDuplicates.splice(index, 1);
       }
-    });
+    } else {
+      // If there is no existing data, fetch it from the database and update the potentialDuplicates array.
+      this.leadsService.fetchPotentialDuplicates(lead_id).subscribe(pdData => {
+        if (pdData) {
+          this.potentialDuplicates.push({ id: lead_id, data: pdData });
+        }
+      });
+    }
   }
 
-  setDuplicateOf(lead: Lead, duplicateId: string) {
-    this.leadsService.markLeadAsDuplicate(lead, duplicateId);
+  setDuplicateOf(id: string, data: string) {
+    const index = this.potentialDuplicates.findIndex(item => item.id === id);
+    if (index !== -1) {
+      const potentialDuplicate = this.potentialDuplicates[index];
+      if (potentialDuplicate.data) {
+        const dataIndex = potentialDuplicate.data.indexOf(data);
+        if (dataIndex !== -1) {
+          potentialDuplicate.data.splice(dataIndex, 1);
+          this.updateLeadsState(id, data);
+        }
+      }
+    }
+  }
+
+  updateLeadsState(id: string, data: string) {
+    this.leads$.pipe(
+      take(1), 
+      map(leads => {
+        const index = leads.findIndex(lead => lead.lead_id === id);
+        if (index !== -1) {
+          const updatedLead = { ...leads[index], duplicate_of: data };
+          const updatedLeads = [...leads];
+          updatedLeads[index] = updatedLead;
+          return updatedLead;
+        }
+        return null;
+      }),
+      filter(updatedLead => !!updatedLead),
+      switchMap(updatedLead => {
+        if (updatedLead) {
+          this.store.dispatch(LeadsActions.updateLead({ lead: updatedLead }));
+          return of(updatedLead);
+        } else {
+          return EMPTY;
+        }
+      })
+    ).subscribe();
   }
   
 }

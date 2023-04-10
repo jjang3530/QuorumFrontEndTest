@@ -18,8 +18,8 @@
             <th mat-header-cell *matHeaderCellDef> Potential Duplicates </th>
             <td mat-cell *matCellDef="let lead">
                 <span *ngFor="let potential of potentialDuplicates">
-                    <span *ngIf="potential.id === lead.lead_id">
-                        <div class="click" *ngFor="let data of potential.data" (click)="setDuplicateOf(lead, data)">
+                    <span *ngIf="potential.id === lead.lead_id" >
+                        <div class="click" *ngFor="let data of potential.data" (click)="setDuplicateOf(potential.id, data)">
                             {{ data }}
                         </div>
                     </span>

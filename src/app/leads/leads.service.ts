@@ -32,7 +32,6 @@ export class LeadsService {
     const newDuplicateOf = lead.duplicate_of ? `${lead.duplicate_of}/${duplicate_of_lead_id}` : duplicate_of_lead_id;
     const updatedLead = {...lead, duplicate_of: newDuplicateOf};
     const url = `${this.baseUrl}/${lead.lead_id}`;
-    console.log('url===', url);
     return this.http.put<Lead>(url, updatedLead).pipe(
       catchError(this.handleError)
     );
