@@ -16,7 +16,7 @@ import { filter, map, switchMap, take } from 'rxjs/operators';
 
 export class LeadsListComponent {
   leads$: Observable<Lead[]>;
-  displayedColumns = ['lead_id', 'duplicate_of', 'potential_duplicates', 'first_name', 'last_name', 'email', 'source', 'home_phone', 'cell_phone'];
+  displayedColumns = ['no', 'duplicate_of', 'potential_duplicates', 'first_name', 'last_name', 'email', 'source', 'home_phone', 'cell_phone'];
   potentialDuplicates: { id: string, data?: string[] | undefined }[] = [];
 
   constructor(private store: Store, private leadsService: LeadsService) {
@@ -37,9 +37,7 @@ export class LeadsListComponent {
     if (index !== -1) {
       // If there is existing data, update the potentialDuplicates array using that data.
       const pdData = this.potentialDuplicates[index].data;
-      if (pdData) {
-        // ...
-      } else {
+      if (!pdData) {
         this.potentialDuplicates.splice(index, 1);
       }
     } else {
@@ -61,6 +59,8 @@ export class LeadsListComponent {
         if (dataIndex !== -1) {
           potentialDuplicate.data.splice(dataIndex, 1);
           this.updateLeadsState(id, data);
+          const message = `${id} has been moved to actual duplicate`;
+          window.alert(message);
         }
       }
     }

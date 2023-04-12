@@ -1,12 +1,12 @@
 <div class="container">
     <h1>Autovance Leads</h1>
     <table mat-table [dataSource]="leads$">
-        <!--- lead_id Column --->
-        <ng-container matColumnDef="lead_id">
-            <th mat-header-cell *matHeaderCellDef> Lead ID </th>
-            <td mat-cell *matCellDef="let lead"> {{lead.lead_id}} </td>
+        <!--- No Column --->
+        <ng-container matColumnDef="no">
+            <th mat-header-cell *matHeaderCellDef> No </th>
+            <td mat-cell *matCellDef="let leadIndex=index"> {{leadIndex + 1}} </td>
         </ng-container>
-
+        
         <!--- duplicate_of Column --->
         <ng-container matColumnDef="duplicate_of">
             <th mat-header-cell *matHeaderCellDef> duplicate_of </th>

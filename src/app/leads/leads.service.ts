@@ -4,7 +4,6 @@ import { Lead } from './leads.model';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { catchError } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
-import { LeadsActions } from './leads.actions';
 
 @Injectable()
 export class LeadsService {
@@ -41,11 +40,14 @@ export class LeadsService {
   private handleError(error: HttpErrorResponse) {
     if (error.status === 500) {
       // handle HTTP 500 errors
-      return throwError('An error occurred on the server. Please try again later.');
+      const errorMessage = `Sorry, an error occurred while processing your request. Please try again later or contact our support team if the problem persists. Error code: ${error.status} Internal Server Error.`;
+      window.alert(errorMessage);
+      return throwError(errorMessage);
     } else {
       // handle other errors
-      return throwError('An error occurred. Please try again later.');
+      const errorMessage = `An error occurred. Please try again later. Error code: ${error.status}`;
+      window.alert(errorMessage);
+      return throwError(errorMessage);
     }
   }
-  
 }
